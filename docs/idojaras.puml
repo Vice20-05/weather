@@ -1,0 +1,105 @@
+@startuml
+' Időjárás-kliens - class diagram
+' Key point: the UI (ui package) only depends on the IdojarasSzolgaltatas INTERFACE.
+' Only Main knows the concrete implementations.
+
+skinparam packageStyle rectangle
+
+package model {
+  class Idojaras <<record>> {
+    homerseklet : double
+    szel : double
+    idopont : String
+  }
+  class Varos <<record>> {
+    nev : String
+    lat : double
+    lon : double
+  }
+  class IdojarasKivetel {
+    + IdojarasKivetel(uzenet : String)
+    + IdojarasKivetel(uzenet : String, ok : Throwable)
+  }
+  Exception <|-- IdojarasKivetel
+}
+
+package szolgaltatas {
+  interface IdojarasSzolgaltatas {
+    + aktualis(lat : double, lon : double) : Idojaras <<throws IdojarasKivetel>>
+  }
+  class OpenMeteoKliens {
+    - http : HttpClient
+    + aktualis(lat, lon) : Idojaras
+    ~ {static} urlKeszit(lat, lon) : String
+    ~ {static} feldolgoz(json : String) : Idojaras
+  }
+  class MockIdojaras {
+    - valasz : Idojaras
+    - hibatDob : boolean
+    - kesleltetesMs : int
+    + setValasz(i : Idojaras)
+    + setHibatDob(b : boolean)
+    + setKesleltetesMs(ms : int)
+    + aktualis(lat, lon) : Idojaras
+  }
+  class CacheeloIdojaras <<decorator>> {
+    - belso : IdojarasSzolgaltatas
+    - cache : Map<String, Mentett>
+    + aktualis(lat, lon) : Idojaras
+  }
+}
+
+package ui {
+  interface IdojarasNezet {
+    + getValasztottVaros() : Varos
+    + setFrissitesEngedelyezve(b : boolean)
+    + mutatIdojaras(v : Varos, i : Idojaras)
+    + mutatHiba(uzenet : String)
+  }
+  class IdojarasController {
+    - szolgaltatas : IdojarasSzolgaltatas
+    - nezet : IdojarasNezet
+    + frissit()
+  }
+  class IdojarasAblak {
+    - varosValaszto : JComboBox<Varos>
+    - frissitesGomb : JButton
+    + setController(c : IdojarasController)
+  }
+  JFrame <|-- IdojarasAblak
+}
+
+class Main {
+  + {static} main(args : String[])
+}
+
+' implementations
+IdojarasSzolgaltatas <|.. OpenMeteoKliens
+IdojarasSzolgaltatas <|.. MockIdojaras
+IdojarasSzolgaltatas <|.. CacheeloIdojaras
+IdojarasNezet <|.. IdojarasAblak
+
+' decorator wraps another service
+CacheeloIdojaras o--> "1" IdojarasSzolgaltatas : belso
+
+' DIP: the controller only knows the two interfaces
+IdojarasController --> "1" IdojarasSzolgaltatas
+IdojarasController --> "1" IdojarasNezet
+IdojarasAblak ..> IdojarasController : button click
+
+' the only place with "new OpenMeteoKliens()"
+Main ..> OpenMeteoKliens : <<create>>
+Main ..> MockIdojaras : <<create>>
+Main ..> CacheeloIdojaras : <<create>>
+Main ..> IdojarasAblak : <<create>>
+Main ..> IdojarasController : <<create>>
+
+IdojarasSzolgaltatas ..> Idojaras
+IdojarasSzolgaltatas ..> IdojarasKivetel
+
+note right of IdojarasController
+  frissit() runs the service call in a
+  SwingWorker (background thread),
+  done() updates the view on the EDT.
+end note
+@enduml

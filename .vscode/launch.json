@@ -1,0 +1,25 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Időjárás (valós)",
+            "request": "launch",
+            "mainClass": "idojaras.Main"
+        },
+        {
+            "type": "java",
+            "name": "Időjárás (mock)",
+            "request": "launch",
+            "mainClass": "idojaras.Main",
+            "args": "--mock"
+        },
+        {
+            "type": "java",
+            "name": "Időjárás (hiba)",
+            "request": "launch",
+            "mainClass": "idojaras.Main",
+            "args": "--hiba"
+        }
+    ]
+}
