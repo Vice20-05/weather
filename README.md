@@ -128,3 +128,7 @@ has `<<create>>` arrows to the concrete classes.
 
 - 7-day forecast chart
 - OpenAPI (Swagger) description
+
+## Note
+
+Claude only checked if the folders have README and gitignore and pushed them so all of them are pushed
