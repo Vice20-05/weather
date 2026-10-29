@@ -6,6 +6,7 @@ import idojaras.szolgaltatas.CacheeloIdojaras;
 import idojaras.szolgaltatas.IdojarasSzolgaltatas;
 import idojaras.szolgaltatas.MockIdojaras;
 import idojaras.szolgaltatas.OpenMeteoKliens;
+import idojaras.ui.CyberpunkTheme;
 import idojaras.ui.IdojarasAblak;
 import idojaras.ui.IdojarasController;
 
@@ -46,6 +47,7 @@ public class Main {
 
         // Swing components must be created on the EDT
         SwingUtilities.invokeLater(() -> {
+            CyberpunkTheme.apply(); // dark neon look, before any window exists
             IdojarasAblak ablak = new IdojarasAblak(ablakCim);
             IdojarasController controller = new IdojarasController(kesz, ablak);
             ablak.setController(controller);

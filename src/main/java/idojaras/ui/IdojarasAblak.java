@@ -32,7 +32,7 @@ public class IdojarasAblak extends JFrame implements IdojarasNezet {
     };
 
     private final JComboBox<Varos> varosValaszto = new JComboBox<>(VAROSOK);
-    private final JButton frissitesGomb = new JButton("Frissítés");
+    private final JButton frissitesGomb = new JButton("FRISSÍTÉS");
     private final JLabel varosCimke = new JLabel("-");
     private final JLabel homersekletCimke = new JLabel("-");
     private final JLabel szelCimke = new JLabel("-");
@@ -42,15 +42,31 @@ public class IdojarasAblak extends JFrame implements IdojarasNezet {
         super(cim);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        // top: city chooser + button
-        JPanel felso = new JPanel();
-        felso.add(new JLabel("Város:"));
-        felso.add(varosValaszto);
-        felso.add(frissitesGomb);
+        CyberpunkTheme.neonButton(frissitesGomb, CyberpunkTheme.CYAN);
+
+        // top: title line + city chooser + button
+        JLabel fejlec = new JLabel(">> WEATHER_LINK // ONLINE", JLabel.CENTER);
+        fejlec.setForeground(CyberpunkTheme.MAGENTA);
+        fejlec.setFont(new Font(Font.MONOSPACED, Font.BOLD, 18));
+        fejlec.setBorder(BorderFactory.createEmptyBorder(12, 0, 4, 0));
+
+        JPanel valaszto = new JPanel();
+        valaszto.add(new JLabel("Város:"));
+        valaszto.add(varosValaszto);
+        valaszto.add(frissitesGomb);
+
+        JPanel felso = new JPanel(new BorderLayout());
+        felso.add(fejlec, BorderLayout.NORTH);
+        felso.add(valaszto, BorderLayout.CENTER);
 
         // middle: result labels in a 2-column grid
         JPanel eredmeny = new JPanel(new GridLayout(4, 2, 10, 8));
-        eredmeny.setBorder(BorderFactory.createEmptyBorder(10, 20, 20, 20));
+        // neon frame around the data, with a little space inside
+        eredmeny.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createCompoundBorder(
+                        BorderFactory.createEmptyBorder(10, 20, 20, 20),
+                        BorderFactory.createLineBorder(CyberpunkTheme.PURPLE, 2)),
+                BorderFactory.createEmptyBorder(10, 16, 10, 16)));
         eredmeny.add(new JLabel("Város:"));
         eredmeny.add(varosCimke);
         eredmeny.add(new JLabel("Hőmérséklet:"));
@@ -60,13 +76,22 @@ public class IdojarasAblak extends JFrame implements IdojarasNezet {
         eredmeny.add(new JLabel("Időpont:"));
         eredmeny.add(idopontCimke);
 
-        homersekletCimke.setFont(homersekletCimke.getFont().deriveFont(Font.BOLD, 18f));
+        homersekletCimke.setFont(homersekletCimke.getFont().deriveFont(Font.BOLD, 22f));
+        homersekletCimke.setForeground(CyberpunkTheme.YELLOW);
+        varosCimke.setForeground(CyberpunkTheme.CYAN);
+        szelCimke.setForeground(CyberpunkTheme.CYAN);
+        idopontCimke.setForeground(CyberpunkTheme.DIM);
+
+        // whole window: dark background + magenta neon edge
+        JPanel tartalom = new JPanel(new BorderLayout());
+        tartalom.setBorder(BorderFactory.createLineBorder(CyberpunkTheme.MAGENTA, 2));
+        setContentPane(tartalom);
 
         add(felso, BorderLayout.NORTH);
         add(eredmeny, BorderLayout.CENTER);
 
         pack();
-        setSize(400, 260);
+        setSize(560, 340);
         setLocationRelativeTo(null); // center of the screen
     }
 
@@ -88,7 +113,7 @@ public class IdojarasAblak extends JFrame implements IdojarasNezet {
     @Override
     public void setFrissitesEngedelyezve(boolean engedelyezve) {
         frissitesGomb.setEnabled(engedelyezve);
-        frissitesGomb.setText(engedelyezve ? "Frissítés" : "Betöltés...");
+        frissitesGomb.setText(engedelyezve ? "FRISSÍTÉS" : "BETÖLTÉS...");
     }
 
     @Override
